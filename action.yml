@@ -1,0 +1,51 @@
+name: 'Fetch PyPi package version'
+description: 'A GitHub Action to retrieve package version information from PyPI and TestPyPI.'
+author: KevinRohn
+
+branding:
+  icon: 'arrow-down'
+  color: 'white'
+
+inputs:
+  package-name:
+    description: 'The name of the package to check for the latest version'
+    required: true
+  endpoint:
+    description: 'Use PyPi or PyPi test instance - options: pypi, testpypi'
+    required: false
+    default: pypi
+
+outputs:
+  latest-version:
+    description: 'The latest version of the package'
+    value: ${{ steps.version_info.outputs.latest-version }}
+  all-releases:
+    description: 'All releases of the package'
+    value: ${{ steps.version_info.outputs.all-releases }}
+
+runs: 
+  using: 'composite'
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install -r requirements.txt
+
+    - name: Get version info
+      shell: bash
+      id: version_info
+      run: | # shell
+        versions=$(python ${{ github.action_path }}/src/main.py ${{ inputs.endpoint }} ${{ inputs.package-name }})
+
+        latest_version=$(echo $versions | jq -c '.latest_version' | tr -d '\n')
+        all_releases=$(echo $versions | jq -c '.all_releases' | tr -d '\n')
+
+        {
+          echo "latest-version=$latest_version"
+          echo "all-releases=$all_releases"
+        } >> $GITHUB_OUTPUT

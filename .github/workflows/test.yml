@@ -1,0 +1,31 @@
+name: Test PyPi and TestPyPi Versions check
+
+on: push
+
+jobs:
+  check-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check PyPi
+        uses: ./
+        id: pypi_check
+        with:
+          package-name: 'django'
+          endpoint: 'pypi'
+
+      - name: Check PyPi Test instance
+        uses: ./
+        id: testpypi_check
+        with:
+          package-name: 'django'
+          endpoint: 'testpypi'
+
+      - name: Print PyPi and TestPyPi versions
+        run: |
+          echo "PyPi version: ${{ steps.pypi_check.outputs.latest-version }}"
+          echo "TestPyPi version: ${{ steps.testpypi_check.outputs.latest-version }}"
+          echo "PyPi all releases: ${{ steps.pypi_check.outputs.all-releases }}"
+          echo "TestPyPi all releases: ${{ steps.testpypi_check.outputs.all-releases }}"
