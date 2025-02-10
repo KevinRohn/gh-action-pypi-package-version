@@ -31,6 +31,9 @@ runs:
       with:
         python-version: '3.12'
 
+    - run: python -m pip install requests
+      shell: bash
+      
     - name: Get version info
       shell: bash
       id: version_info
