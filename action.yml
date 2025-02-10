@@ -31,11 +31,6 @@ runs:
       with:
         python-version: '3.12'
 
-    - name: Install dependencies
-      shell: bash
-      run: |
-        pip install -r requirements.txt
-
     - name: Get version info
       shell: bash
       id: version_info
